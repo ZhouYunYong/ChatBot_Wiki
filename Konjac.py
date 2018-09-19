@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 import ChatBot_Wiki
 
 # 安裝套件 pip install googletrans
