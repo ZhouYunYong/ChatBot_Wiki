@@ -7,7 +7,7 @@
 # 套件 tempfile , 為了要使用暫存檔
 from gtts import gTTS 
 from pygame import mixer   
-import tempfile   
+import tempfile 
 import speech_recognition
 from hanziconv import HanziConv
 import requests 
@@ -37,10 +37,10 @@ def compareSim(word1, word2):
 def stt():
     global question, answer
     try:
-        recong = speech_recognition.Recognizer()                                # 建立辨識物件
-        with speech_recognition.Microphone() as voice:                          # 打開麥克風取得聲音
-            audio = recong.listen(voice)                                        # 讓辨識物件聽到的聲音
-        question = recong.recognize_google(audio, language=stt_language)        # 將聲音資料翻成文字
+        recog = speech_recognition.Recognizer()                                # 建立辨識物件
+        with speech_recognition.Microphone() as source:                         # 打開麥克風取得聲音
+            audio = recog.listen(source)                                        # 讓辨識物件聽到的聲音
+        question = recog.recognize_google(audio, language=stt_language)        # 將聲音資料翻成文字
 #        print(question)
         if question in QA.keys():
            answer = QA[question] 
@@ -60,9 +60,10 @@ def speak(t, lang):
             mixer.music.load("{}.mp3".format(tf.name))          # 讀取音檔
             mixer.music.play()                                  # 播放音檔
             while(mixer.music.get_busy()):
+                print("...")
                 pass
     except:
-#        print("error: 文字無法以語音說出")                       # 有些符號無法以語音說出
+        print("error: 文字無法以語音說出")                       # 有些符號無法以語音說出
         pass
         
 question = stt()                                                # 等待語音輸入, 問一句話
@@ -115,6 +116,7 @@ else:
                     for sentance in finalList:                                              # 切出來的文字片段一個一個唸出來
                         if sentance != 'XXX':                                               # 如果遇到 XXX 唸英文, 其他就念中文
                             speak(sentance, 'zh-tw')
+                            print("HERE")
                         else:
                             speak(match_English[index], 'en')
                             index += 1
@@ -130,12 +132,11 @@ else:
     #    speak('Google 搜尋失敗', 'zh-tw')
         
 
-    mixer.music.stop()
+#    mixer.music.stop()
     
     
-    
-    
-    
+
+
     
 
 
