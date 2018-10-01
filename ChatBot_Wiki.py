@@ -6,8 +6,8 @@
 # 安裝套件 pip install pygame 播放音檔
 # 套件 tempfile , 為了要使用暫存檔
 from gtts import gTTS 
-from pygame import mixer   
-import tempfile 
+from pygame import mixer
+import tempfile   
 import speech_recognition
 from hanziconv import HanziConv
 import requests 
@@ -37,10 +37,10 @@ def compareSim(word1, word2):
 def stt():
     global question, answer
     try:
-        recog = speech_recognition.Recognizer()                                # 建立辨識物件
-        with speech_recognition.Microphone() as source:                         # 打開麥克風取得聲音
-            audio = recog.listen(source)                                        # 讓辨識物件聽到的聲音
-        question = recog.recognize_google(audio, language=stt_language)        # 將聲音資料翻成文字
+        recong = speech_recognition.Recognizer()                                # 建立辨識物件
+        with speech_recognition.Microphone() as voice:                          # 打開麥克風取得聲音
+            audio = recong.listen(voice)                                        # 讓辨識物件聽到的聲音
+        question = recong.recognize_google(audio, language=stt_language)        # 將聲音資料翻成文字
 #        print(question)
         if question in QA.keys():
            answer = QA[question] 
@@ -54,18 +54,22 @@ def stt():
 # 執行說話(要說的文字, 要說的語言)
 def speak(t, lang):
     try:
-        with tempfile.NamedTemporaryFile(delete=True) as tf:    # 打開暫存檔
+        with tempfile.NamedTemporaryFile(delete=True) as ntf:    # 打開暫存檔
             tts = gTTS(text=t, lang=lang)                       # 要用 zh-tw 不能用 zh
-            tts.save("{}.mp3".format(tf.name))                  # 存成暫存檔
-            mixer.music.load("{}.mp3".format(tf.name))          # 讀取音檔
+            tts.save(f"{ntf.name}.mp3")                          # 存成暫存檔
+            mixer.music.load(f"{ntf.name}.mp3")                  # 讀取音檔
             mixer.music.play()                                  # 播放音檔
             while(mixer.music.get_busy()):
-                print("...")
                 pass
     except:
-        print("error: 文字無法以語音說出")                       # 有些符號無法以語音說出
+#        print("error: 文字無法以語音說出")                       # 有些符號無法以語音說出
         pass
-        
+    
+
+
+
+
+    
 question = stt()                                                # 等待語音輸入, 問一句話
 
 if question in QA.keys():
@@ -90,7 +94,7 @@ else:
         response = requests.get(wiki_url.text)                      # GET 取得維基百科
         if response.status_code == 200:                             # 前往維基百科成功
     
-            bs = BeautifulSoup(response.text, 'html.parser')        # 用 BeautifulSoup 解析原始內容
+            bs = BeautifulSoup(response.text, 'lxml')        # 用 BeautifulSoup 解析原始內容
             content = bs.select('.mw-parser-output p')              # 找到 class = 'mw-parser-output' 下的 <p>, 回傳 list  結果
             
             for i in range(len(content)):                           # 在 list 結果中一個一個尋找有 關鍵字 開頭的段落
@@ -103,6 +107,9 @@ else:
                 
                 
                 if simVal1 >= 0.5 or simVal2 >= 0.5 or simVal3 >= 0.5 or simVal4 >= 0.5:    # 若相似性超過 50 %
+                    
+                    
+                    
                     re_text = re.sub(r'[\[][0-9a-zA-Z]+[\]]', '', content[i].text)              # 去除 [1] [2]...
                     
                     print(re_text)
@@ -112,11 +119,16 @@ else:
                     print(match_English)
                     text_onlyChinese_mark = re.sub(pat_English, '#XXX#', re_text)           # 將英文用 #XXX# 取代
                     finalList = text_onlyChinese_mark.split('#')                            # 將文章以 # 切分片段
+                                                            
+#                    rmNum_Text = rmNum(content[i].text)             
+                    
+#                    get
+                                                            
+                    
                     index = 0                                                               # 紀錄英文出現的次數, 才可以搭配索引取出對應的英文字
                     for sentance in finalList:                                              # 切出來的文字片段一個一個唸出來
                         if sentance != 'XXX':                                               # 如果遇到 XXX 唸英文, 其他就念中文
                             speak(sentance, 'zh-tw')
-                            print("HERE")
                         else:
                             speak(match_English[index], 'en')
                             index += 1
@@ -132,11 +144,12 @@ else:
     #    speak('Google 搜尋失敗', 'zh-tw')
         
 
-#    mixer.music.stop()
+    mixer.music.stop()
     
     
-
-
+    
+    
+    
     
 
 
