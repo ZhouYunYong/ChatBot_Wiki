@@ -94,8 +94,8 @@ print(f2)
 
 
 
-
-
+s1 = re.sub(r'[a-zA-Z]+', '#English#', '123apple456')
+print(s1)
 
 
 

@@ -9,7 +9,9 @@ mixer.init()                        # 初始化播放物件
 
 type(gTTS)
 
-tts = gTTS(text='新年快樂', lang='zh-tw')
+text = '測試'
+
+tts = gTTS(text=text)
 
 type(gTTS)
 type(tts)
@@ -19,10 +21,10 @@ type(tts)
 
 #?gTTS
 
-tts.save('新年快樂.mp3')
+tts.save(text+'.mp3')
 
 
-mixer.music.load('生日快樂.mp3')                    # 讀取音檔
+mixer.music.load(text+'.mp3')                    # 讀取音檔
 mixer.music.play()                                  # 播放音檔
 
 
@@ -51,7 +53,7 @@ def speak1(text, lang):
 #speak('', 'en')
 
 
-speak1('測試', 'zh-tw')
+#speak1('測試', 'zh-tw')
 # C:\Users\Admin\AppData\Local\Temp
 
 
@@ -111,9 +113,42 @@ def speak2(text, lang):
         
         
         
+from gtts import lang
+lang.tts_langs()
         
         
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

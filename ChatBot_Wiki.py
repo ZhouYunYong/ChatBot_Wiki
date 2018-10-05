@@ -5,7 +5,7 @@
 # 安裝套件 pip install gTTS 文字轉語音
 # 安裝套件 pip install pygame 播放音檔
 # 套件 tempfile , 為了要使用暫存檔
-from gtts import gTTS 
+from gtts import gTTS
 from pygame import mixer
 import tempfile   
 import speech_recognition
@@ -13,6 +13,9 @@ from hanziconv import HanziConv
 import requests 
 from bs4 import BeautifulSoup 
 import re
+
+
+
 
 question = ''
 answer = ''
@@ -62,15 +65,35 @@ def speak(t, lang):
             while(mixer.music.get_busy()):
                 pass
     except:
-#        print("error: 文字無法以語音說出")                       # 有些符號無法以語音說出
+        print('播放音效失敗')                       # 有些符號無法以語音說出
         pass
     
 
-
-
-
+# 取得句中的英文串列, 以及去除所有 [0-9] 的乾淨文章, 切分英文與中文
+def speak_re(sentence):
     
+#    t1 = re.sub(r'\[.+?\]', '', content)           # 去除 [1] [2]...
+    s1 = re.sub(r'\[[^\]]*\]', '', sentence)                      # 去除 [1] [2]...   
+    print(s1)
+    en_list = re.findall(r'[a-zA-Z ]+',s1)                     # 找出句子中所有英文
+    s2 = re.sub(r'[a-zA-Z \-]+', '@English@', s1)           # 將英文用 #Englist# 取代
+    all_list = s2.split('@')                            # 將文章以 # 切割
+    
+    index = 0                                                               # 紀錄英文出現的次數, 才可以搭配索引取出對應的英文字
+    for text in all_list:                                              # 切出來的文字片段一個一個唸出來
+        if text != 'English':                                               # 如果遇到 XXX 唸英文, 其他就念中文
+            speak(text, 'zh-tw')
+        else:
+            speak(en_list[index], 'en')
+            index += 1
+            
+#    return f_list, e_list
+
+
+
 question = stt()                                                # 等待語音輸入, 問一句話
+#question = '時間簡史'
+
 
 if question in QA.keys():
     speak(QA[question], 'zh-tw')
@@ -107,31 +130,9 @@ else:
                 
                 
                 if simVal1 >= 0.5 or simVal2 >= 0.5 or simVal3 >= 0.5 or simVal4 >= 0.5:    # 若相似性超過 50 %
-                    
-                    
-                    
-                    re_text = re.sub(r'[\[][0-9a-zA-Z]+[\]]', '', content[i].text)              # 去除 [1] [2]...
-                    
-                    print(re_text)
-                    
-                    pat_English = re.compile('[a-zA-Z \-]+')                                # 英文的正則表達式
-                    match_English = pat_English.findall(re_text)                            # 找出句子中所有英文
-                    print(match_English)
-                    text_onlyChinese_mark = re.sub(pat_English, '#XXX#', re_text)           # 將英文用 #XXX# 取代
-                    finalList = text_onlyChinese_mark.split('#')                            # 將文章以 # 切分片段
-                                                            
-#                    rmNum_Text = rmNum(content[i].text)             
-                    
-#                    get
-                                                            
-                    
-                    index = 0                                                               # 紀錄英文出現的次數, 才可以搭配索引取出對應的英文字
-                    for sentance in finalList:                                              # 切出來的文字片段一個一個唸出來
-                        if sentance != 'XXX':                                               # 如果遇到 XXX 唸英文, 其他就念中文
-                            speak(sentance, 'zh-tw')
-                        else:
-                            speak(match_English[index], 'en')
-                            index += 1
+                                                       
+                    speak_re(content[i].text)
+
                     break
     
             if not (simVal1 >= 0.5 or simVal2 >= 0.5 or simVal3 >= 0.5 or simVal4 >= 0.5) : speak('我也不知道', 'zh-tw')  # 全部搜尋完皆無 超過 50 % 的相似性開頭
@@ -144,11 +145,7 @@ else:
     #    speak('Google 搜尋失敗', 'zh-tw')
         
 
-    mixer.music.stop()
-    
-    
-    
-    
+
     
     
 
